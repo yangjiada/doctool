@@ -3,8 +3,7 @@
 
 """
 @author: Jan Yang
-@software: PyCharm Community Edition
-@time: 2019/5/24 18:17
+
 """
 
 
@@ -12,48 +11,61 @@ import requests
 import time
 import html2markdown
 import tomd
+import os
+import lxml.etree as et
 
 from lxml.etree import HTML
 from lxml import etree
 from urllib.parse import urljoin
 
 from settings import HEADERS
+from trans import *
 
 
 def crawl_links(url, xpath):
+    """ 获取指定链接
+    """
     # links = []
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
         tree = HTML(response.text)
         links = tree.xpath(xpath)
-        links = [('{}.{}'.format(i+1, j), urljoin(response.url, j)) for i, j in enumerate(links)]
+        links = [('{}.html'.format(i), urljoin(response.url, j)) for i, j in enumerate(links)]
         print(links)
         return links
 
-def download(url, to_file, remove_xpath=None):
+def download_links(url, xpath):
+    """ 下载所有链接
+    """
+    links = crawl_links(url, xpath)
+
+    for name, link in links:
+        download(link, name)
+
+
+def download(url, filename, remove_xpath=None):
+    """ 下载单个链接
+    """
     response = requests.get(url, headers=HEADERS)
+    save_path = 'html/'
+    if os.path.exists(save_path):
+        pass
+    else:
+        os.makedirs(save_path)
 
     if response.status_code == 200:
         response.encoding = 'utf-8'
         tree = HTML(response.content)
-        # tree.remove(tree.xpath(remove_xpath))
+        
+        # tree = tree.remove(tree.xpath(remove_xpath))
         # print(tree.tostring(pretty_print=True))
-        # print(response.content)
-        # print(etree.to)
-        html2md(response.text, 'test.md')
-        # with open(to_file, 'wb') as f:
+
+        # print(et.tostring(tree, encoding='utf-8', pretty_print=True))
+        with open(save_path+filename, 'wb') as f:
+            f.write(et.tostring(tree, encoding='utf-8', pretty_print=True))
 
             # f.write(response.content)
-            # print(response.text)
-            # print()
-            # print(response.content)
-            # x = etree.tounicode(tree.xpath(remove_xpath)[0])
-            # print(response.text.replace(x, ''))
-            # print()
-            # print(etree.tounicode(tree).encode())
             # f.write(etree.tounicode(tree).encode())
-        # print(etree.tostring(tree))
-        #     print(type(response.content))
 
 def html2md(html, to_file):
     with open('1.html', 'r', encoding='utf-8') as f:
@@ -67,7 +79,8 @@ def html2md(html, to_file):
 if __name__ == '__main__':
     # crawl_links('https://docs.scrapy.org/en/latest', "//li[@class='toctree-l1']/a[@class='reference internal']/@href")
     # download('http://docs.scrapy.org/en/latest/intro/overview.html', 'overview.html', '//html/body/div[1]/nav/div')
-    html2md('s', 'test.md')
+    download_links('https://docs.scrapy.org/en/latest', "//li[@class='toctree-l1']/a[@class='reference internal']/@href")
+    # html2md('s', 'test.md')
     # print(html2markdown.convert('<h2>Test</h2><pre><code>Here is some code</code></pre>'))
     # print(type('<h2>Test</h2><pre><code>Here is some code</code></pre>'))
     # print(html2markdown.convert("""<h1>Scrapy一目了然</h1>"""))

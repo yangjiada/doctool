@@ -3,15 +3,9 @@
 
 """
 @author: Jan Yang
-@software: PyCharm Community Edition
-@time: 2019/5/24 18:18
+
 """
 
-NAME = ''
-
-URL = ''
-
-LINK = '#leftcolumn a'
 
 HEADERS = {
     "Accept": "*/*",
