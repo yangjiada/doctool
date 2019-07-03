@@ -80,6 +80,7 @@ if __name__ == '__main__':
     # crawl_links('https://docs.scrapy.org/en/latest', "//li[@class='toctree-l1']/a[@class='reference internal']/@href")
     # download('http://docs.scrapy.org/en/latest/intro/overview.html', 'overview.html', '//html/body/div[1]/nav/div')
     download_links('https://docs.scrapy.org/en/latest', "//li[@class='toctree-l1']/a[@class='reference internal']/@href")
+    process_dir('html')
     # html2md('s', 'test.md')
     # print(html2markdown.convert('<h2>Test</h2><pre><code>Here is some code</code></pre>'))
     # print(type('<h2>Test</h2><pre><code>Here is some code</code></pre>'))
